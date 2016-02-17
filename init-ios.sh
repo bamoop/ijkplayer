@@ -16,9 +16,9 @@
 #
 
 # IJK_FFMPEG_UPSTREAM=git://git.videolan.org/ffmpeg.git
-IJK_FFMPEG_UPSTREAM=https://github.com/Bilibili/FFmpeg.git
-IJK_FFMPEG_FORK=https://github.com/Bilibili/FFmpeg.git
-IJK_FFMPEG_COMMIT=ijk-r0.2.4-dev
+IJK_FFMPEG_UPSTREAM=https://github.com/tbago/IJKFFmpeg.git
+IJK_FFMPEG_FORK=https://github.com/tbago/IJKFFmpeg.git
+IJK_FFMPEG_COMMIT=HEAD
 IJK_FFMPEG_LOCAL_REPO=extra/ffmpeg
 
 # gas-preprocessor backup
@@ -44,7 +44,7 @@ function pull_fork()
 }
 
 pull_fork "armv7"
-pull_fork "armv7s"
+# pull_fork "armv7s"
 pull_fork "arm64"
 pull_fork "i386"
 pull_fork "x86_64"
