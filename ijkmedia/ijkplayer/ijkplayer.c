@@ -432,6 +432,12 @@ static int ijkmp_stop_l(IjkMediaPlayer *mp)
     return 0;
 }
 
+void ijkmp_pre_stop(IjkMediaPlayer *mp) {
+    if (mp != NULL) {
+        ffp_prestop_l(mp->ffplayer);
+    }
+}
+
 int ijkmp_stop(IjkMediaPlayer *mp)
 {
     assert(mp);

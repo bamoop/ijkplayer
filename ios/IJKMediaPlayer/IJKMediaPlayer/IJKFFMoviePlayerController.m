@@ -424,6 +424,7 @@ inline static int getPlayerOption(IJKFFOptionCategory category)
     if (!_mediaPlayer)
         return;
 
+    ijkmp_pre_stop(_mediaPlayer);
     ijkmp_stop(_mediaPlayer);
     ijkmp_shutdown(_mediaPlayer);
     [self performSelectorOnMainThread:@selector(shutdownClose:) withObject:self waitUntilDone:YES];

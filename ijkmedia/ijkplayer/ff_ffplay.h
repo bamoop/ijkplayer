@@ -57,6 +57,7 @@ int       ffp_start_from_l(FFPlayer *ffp, long msec);
 int       ffp_start_l(FFPlayer *ffp);
 int       ffp_pause_l(FFPlayer *ffp);
 int       ffp_is_paused_l(FFPlayer *ffp);
+int       ffp_prestop_l(FFPlayer *ffp);
 int       ffp_stop_l(FFPlayer *ffp);
 int       ffp_wait_stop_l(FFPlayer *ffp);
 

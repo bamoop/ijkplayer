@@ -188,6 +188,7 @@ int             ijkmp_set_data_source(IjkMediaPlayer *mp, const char *url);
 int             ijkmp_prepare_async(IjkMediaPlayer *mp);
 int             ijkmp_start(IjkMediaPlayer *mp);
 int             ijkmp_pause(IjkMediaPlayer *mp);
+void            ijkmp_pre_stop(IjkMediaPlayer *mp);
 int             ijkmp_stop(IjkMediaPlayer *mp);
 int             ijkmp_seek_to(IjkMediaPlayer *mp, long msec);
 int             ijkmp_get_state(IjkMediaPlayer *mp);

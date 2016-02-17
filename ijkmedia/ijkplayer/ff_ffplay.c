@@ -3318,6 +3318,18 @@ int ffp_is_paused_l(FFPlayer *ffp)
     return is->paused;
 }
 
+int ffp_prestop_l(FFPlayer *ffp)
+{
+    assert(ffp);
+    VideoState *is = ffp->is;
+
+    if (is){
+        // LOGV("avformat_preclose_input!\n");
+        avformat_preclose_input(&is->ic);
+    }
+    return 0;
+}
+            
 int ffp_stop_l(FFPlayer *ffp)
 {
     assert(ffp);
