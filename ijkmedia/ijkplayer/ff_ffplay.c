@@ -91,6 +91,8 @@
 
 ///<Fixme(tbago)    add rtsp real time support
 #define FOR_RTSP_REAL_TIME_SUPPORT
+#define RTSP_TIME_OUT                  50000                ///< for rtsp read data time out
+static int64_t rtsp_last_decode_time    =0;                 ///< last decode frame time
 
 static int ffp_format_control_message(struct AVFormatContext *s, int type,
                                       void *data, size_t data_size);
@@ -2292,8 +2294,20 @@ static void stream_component_close(FFPlayer *ffp, int stream_index)
 
 static int decode_interrupt_cb(void *ctx)
 {
+#ifdef FOR_RTSP_REAL_TIME_SUPPORT
+    int64_t current_time = av_gettime_relative();
+    int64_t time_different = (current_time - rtsp_last_decode_time) / 100;
+    FFPlayer *ffp = ctx;
+    if (time_different > RTSP_TIME_OUT
+        && rtsp_last_decode_time != 0) {
+        ffp_toggle_buffering(ffp, 1);
+        rtsp_last_decode_time = 0;
+    }
+    return ffp->is->abort_request;
+#else
     VideoState *is = ctx;
     return is->abort_request;
+#endif
 }
 
 static int is_realtime(AVFormatContext *s)
@@ -2334,6 +2348,10 @@ static int read_thread(void *arg)
     int64_t prev_io_tick_counter = 0;
     int64_t io_tick_counter = 0;
 
+#ifdef FOR_RTSP_REAL_TIME_SUPPORT
+    rtsp_last_decode_time = av_gettime_relative();
+#endif
+    
     memset(st_index, -1, sizeof(st_index));
     is->last_video_stream = is->video_stream = -1;
     is->last_audio_stream = is->audio_stream = -1;
@@ -2349,7 +2367,11 @@ static int read_thread(void *arg)
         goto fail;
     }
     ic->interrupt_callback.callback = decode_interrupt_cb;
+#ifdef FOR_RTSP_REAL_TIME_SUPPORT
+    ic->interrupt_callback.opaque = ffp;
+#else
     ic->interrupt_callback.opaque = is;
+#endif
     if (!av_dict_get(ffp->format_opts, "scan_all_pmts", NULL, AV_DICT_MATCH_CASE)) {
         av_dict_set(&ffp->format_opts, "scan_all_pmts", "1", AV_DICT_DONT_OVERWRITE);
         scan_all_pmts_set = 1;
@@ -2712,6 +2734,11 @@ static int read_thread(void *arg)
         }
         pkt->flags = 0;
         ret = av_read_frame(ic, pkt);
+#ifdef FOR_RTSP_REAL_TIME_SUPPORT
+        if (ret >= 0) {
+            rtsp_last_decode_time = av_gettime_relative();
+        }
+#endif
         if (ret < 0) {
             if ((ret == AVERROR_EOF || avio_feof(ic->pb)) && !is->eof) {
                 if (is->video_stream >= 0)
