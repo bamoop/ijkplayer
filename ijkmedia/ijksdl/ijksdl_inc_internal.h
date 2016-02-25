@@ -29,6 +29,9 @@
 #include "ijksdl_misc.h"
 #include "ijksdl_stdinc.h"
 
-#define SDLTRACE ALOGD
-
+#ifdef DEBUG
+    #define SDLTRACE ALOGD
+#else
+    #define SDLTRACE
+#endif
 #endif
