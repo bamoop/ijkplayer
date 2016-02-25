@@ -104,7 +104,7 @@ static AVFrame *opaque_obtain_managed_frame_buffer(SDL_VoutOverlay_Opaque* opaqu
 
 static void overlay_free_l(SDL_VoutOverlay *overlay)
 {
-    ALOGE("SDL_Overlay(ffmpeg): overlay_free_l(%p)\n", overlay);
+//    ALOGE("SDL_Overlay(ffmpeg): overlay_free_l(%p)\n", overlay);
     if (!overlay)
         return;
 
