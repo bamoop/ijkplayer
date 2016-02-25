@@ -45,7 +45,7 @@
     BOOL removed = [self removeEntryOfObserver:observer forKeyPath:keyPath];
     if (removed) {
         // duplicated register
-        NSLog(@"duplicated observer");
+        DNSLog(@"duplicated observer");
     }
 
     @try {
@@ -59,7 +59,7 @@
         entry.keyPath  = keyPath;
         [_observerArray addObject:entry];
     } @catch (NSException *e) {
-        NSLog(@"IJKKVO: failed to add observer for %@\n", keyPath);
+        DNSLog(@"IJKKVO: failed to add observer for %@\n", keyPath);
     }
 }
 
@@ -73,7 +73,7 @@
     BOOL removed = [self removeEntryOfObserver:observer forKeyPath:keyPath];
     if (removed) {
         // duplicated register
-        NSLog(@"duplicated observer");
+        DNSLog(@"duplicated observer");
     }
 
     @try {
@@ -82,7 +82,7 @@
                         forKeyPath:keyPath];
         }
     } @catch (NSException *e) {
-        NSLog(@"IJKKVO: failed to remove observer for %@\n", keyPath);
+        DNSLog(@"IJKKVO: failed to remove observer for %@\n", keyPath);
     }
 }
 
@@ -105,7 +105,7 @@
             [target removeObserver:observer
                         forKeyPath:entry.keyPath];
         } @catch (NSException *e) {
-            NSLog(@"IJKKVO: failed to remove observer for %@\n", entry.keyPath);
+            DNSLog(@"IJKKVO: failed to remove observer for %@\n", entry.keyPath);
         }
     }];
 

@@ -87,7 +87,7 @@
         return NULL;
     if ((ret = av_base64_decode(utf8Plain, utf8Cipher, (int)out_size)) < 0) {
         free(utf8Plain);
-        NSLog(@"Invalid base64 in MRL\n");
+        DNSLog(@"Invalid base64 in MRL\n");
         return NULL;
     }
 

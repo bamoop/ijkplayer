@@ -579,7 +579,7 @@ void CreateVTBSession(VideoToolBoxContext* context, int width, int height)
     if (status != noErr) {
         context->m_vt_session = NULL;
         NSError* error = [NSError errorWithDomain:NSOSStatusErrorDomain code:status userInfo:nil];
-        NSLog(@"Error %@", [error description]);
+        DNSLog(@"Error %@", [error description]);
         ALOGI("%s - failed with status = (%d)", __FUNCTION__, (int)status);
     } else {
         context->m_vt_session =(void*) vt_session;

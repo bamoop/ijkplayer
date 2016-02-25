@@ -43,7 +43,7 @@
     strcpy(template, [templateStr cStringUsingEncoding:NSASCIIStringEncoding]);
     int fd = mkstemp(template);
     if (fd <= 0) {
-        NSLog(@"Could not create fd in directory %@", aDirectory);
+        DNSLog(@"Could not create fd in directory %@", aDirectory);
         return -1;
     }
     unlink(template);

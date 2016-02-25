@@ -65,14 +65,14 @@
                                               0,
                                               &audioQueueRef);
         if (status != noErr) {
-            NSLog(@"AudioQueue: AudioQueueNewOutput failed (%d)\n", (int)status);
+            DNSLog(@"AudioQueue: AudioQueueNewOutput failed (%d)\n", (int)status);
             self = nil;
             return nil;
         }
 
         status = AudioQueueStart(audioQueueRef, NULL);
         if (status != noErr) {
-            NSLog(@"AudioQueue: AudioQueueStart failed (%d)\n", (int)status);
+            DNSLog(@"AudioQueue: AudioQueueStart failed (%d)\n", (int)status);
             self = nil;
             return nil;
         }
@@ -91,7 +91,7 @@
         /*-
         status = AudioQueueStart(audioQueueRef, NULL);
         if (status != noErr) {
-            NSLog(@"AudioQueue: AudioQueueStart failed (%d)\n", (int)status);
+            DNSLog(@"AudioQueue: AudioQueueStart failed (%d)\n", (int)status);
             self = nil;
             return nil;
         }
@@ -118,12 +118,12 @@
         _isPaused = NO;
         NSError *error = nil;
         if (NO == [[AVAudioSession sharedInstance] setActive:YES error:&error]) {
-            NSLog(@"AudioQueue: AVAudioSession.setActive(YES) failed: %@\n", error ? [error localizedDescription] : @"nil");
+            DNSLog(@"AudioQueue: AVAudioSession.setActive(YES) failed: %@\n", error ? [error localizedDescription] : @"nil");
         }
 
         OSStatus status = AudioQueueStart(_audioQueueRef, NULL);
         if (status != noErr)
-            NSLog(@"AudioQueue: AudioQueueStart failed (%d)\n", (int)status);
+            DNSLog(@"AudioQueue: AudioQueueStart failed (%d)\n", (int)status);
     }
 }
 
@@ -139,7 +139,7 @@
         _isPaused = YES;
         OSStatus status = AudioQueuePause(_audioQueueRef);
         if (status != noErr)
-            NSLog(@"AudioQueue: AudioQueuePause failed (%d)\n", (int)status);
+            DNSLog(@"AudioQueue: AudioQueuePause failed (%d)\n", (int)status);
     }
 }
 

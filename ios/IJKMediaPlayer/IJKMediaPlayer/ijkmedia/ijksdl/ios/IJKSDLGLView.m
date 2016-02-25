@@ -59,14 +59,14 @@ static BOOL validateProgram(GLuint prog)
     {
         GLchar *log = (GLchar *)malloc(logLength);
         glGetProgramInfoLog(prog, logLength, &logLength, log);
-        NSLog(@"Program validate log:\n%s", log);
+        DNSLog(@"Program validate log:\n%s", log);
         free(log);
     }
 #endif
 
     glGetProgramiv(prog, GL_VALIDATE_STATUS, &status);
     if (status == GL_FALSE) {
-		NSLog(@"Failed to validate program %d", prog);
+		DNSLog(@"Failed to validate program %d", prog);
         return NO;
     }
 
@@ -80,7 +80,7 @@ static GLuint compileShader(GLenum type, NSString *shaderString)
 
     GLuint shader = glCreateShader(type);
     if (shader == 0 || shader == GL_INVALID_ENUM) {
-        NSLog(@"Failed to create shader %d", type);
+        DNSLog(@"Failed to create shader %d", type);
         return 0;
     }
 
@@ -94,7 +94,7 @@ static GLuint compileShader(GLenum type, NSString *shaderString)
     {
         GLchar *log = (GLchar *)malloc(logLength);
         glGetShaderInfoLog(shader, logLength, &logLength, log);
-        NSLog(@"Shader compile log:\n%s", log);
+        DNSLog(@"Shader compile log:\n%s", log);
         free(log);
     }
 #endif
@@ -102,7 +102,7 @@ static GLuint compileShader(GLenum type, NSString *shaderString)
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
     if (status == GL_FALSE) {
         glDeleteShader(shader);
-		NSLog(@"Failed to compile shader:\n");
+		DNSLog(@"Failed to compile shader:\n");
         return 0;
     }
 
@@ -239,19 +239,19 @@ static int g_ijk_gles_queue_spec_key;
 
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (status != GL_FRAMEBUFFER_COMPLETE) {
-        NSLog(@"failed to make complete framebuffer object %x\n", status);
+        DNSLog(@"failed to make complete framebuffer object %x\n", status);
         return NO;
     }
 
     CVReturn err = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, _context, NULL, &_textureCache);
     if (err) {
-        NSLog(@"Error at CVOpenGLESTextureCacheCreate %d\n", err);
+        DNSLog(@"Error at CVOpenGLESTextureCacheCreate %d\n", err);
         return NO;
     }
 
     GLenum glError = glGetError();
     if (GL_NO_ERROR != glError) {
-        NSLog(@"failed to setup GL %x\n", glError);
+        DNSLog(@"failed to setup GL %x\n", glError);
         return NO;
     }
 
@@ -296,7 +296,7 @@ static int g_ijk_gles_queue_spec_key;
 
     _context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
     if (_context == nil) {
-        NSLog(@"failed to setup EAGLContext\n");
+        DNSLog(@"failed to setup EAGLContext\n");
         return NO;
     }
 
@@ -305,7 +305,7 @@ static int g_ijk_gles_queue_spec_key;
 
     _didSetupGL = NO;
     if ([self setupEAGLContext:_context]) {
-        NSLog(@"OK setup GL\n");
+        DNSLog(@"OK setup GL\n");
         _didSetupGL = YES;
     }
 
@@ -420,11 +420,11 @@ static int g_ijk_gles_queue_spec_key;
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status != GL_FRAMEBUFFER_COMPLETE) {
 
-        NSLog(@"failed to make complete framebuffer object %x", status);
+        DNSLog(@"failed to make complete framebuffer object %x", status);
 
 	} else {
 
-        NSLog(@"OK setup GL framebuffer %d:%d", _backingWidth, _backingHeight);
+        DNSLog(@"OK setup GL framebuffer %d:%d", _backingWidth, _backingHeight);
     }
 
     [self updateVertices];
@@ -456,17 +456,17 @@ static int g_ijk_gles_queue_spec_key;
             _frameChroma = overlay->format;
             _renderer = [[IJKSDLGLRenderNV12 alloc] initWithTextureCache:_textureCache];
             _bytesPerPixel = 1;
-            NSLog(@"OK use NV12 GL renderer");
+            DNSLog(@"OK use NV12 GL renderer");
         } else if (overlay->format == SDL_FCC_I420) {
             _frameChroma = overlay->format;
             _renderer = [[IJKSDLGLRenderI420 alloc] init];
             _bytesPerPixel = 1;
-            NSLog(@"OK use I420 GL renderer");
+            DNSLog(@"OK use I420 GL renderer");
         } else if (overlay->format == SDL_FCC_RV24) {
             _frameChroma = overlay->format;
             _renderer = [[IJKSDLGLRenderRV24 alloc] init];
             _bytesPerPixel = 3;
-            NSLog(@"OK use RV24 GL renderer");
+            DNSLog(@"OK use RV24 GL renderer");
         }
 
         if (![self loadShaders]) {
@@ -508,7 +508,7 @@ static int g_ijk_gles_queue_spec_key;
     GLint status;
     glGetProgramiv(_program, GL_LINK_STATUS, &status);
     if (status == GL_FALSE) {
-		NSLog(@"Failed to link program %d", _program);
+		DNSLog(@"Failed to link program %d", _program);
         goto exit;
     }
 
@@ -526,7 +526,7 @@ exit:
 
     if (result) {
 
-        NSLog(@"OK setup GL programm");
+        DNSLog(@"OK setup GL programm");
 
     } else {
 
@@ -590,7 +590,7 @@ exit:
         // gles throws gpus_ReturnNotPermittedKillClient, while app is in background
         if (![self tryLockGLActive]) {
             if (0 == (_tryLockErrorCount % 100)) {
-                NSLog(@"IJKSDLGLView:display: unable to tryLock GL active: %d\n", _tryLockErrorCount);
+                DNSLog(@"IJKSDLGLView:display: unable to tryLock GL active: %d\n", _tryLockErrorCount);
             }
             _tryLockErrorCount++;
             return;
@@ -599,7 +599,7 @@ exit:
         _tryLockErrorCount = 0;
         if (!_didStopGL) {
             if (_context == nil) {
-                NSLog(@"IJKSDLGLView: nil EAGLContext\n");
+                DNSLog(@"IJKSDLGLView: nil EAGLContext\n");
                 return;
             }
 
@@ -624,7 +624,7 @@ exit:
     }
 
     if (![self setupDisplay:overlay]) {
-        NSLog(@"IJKSDLGLView: setupDisplay failed\n");
+        DNSLog(@"IJKSDLGLView: setupDisplay failed\n");
         return;
     }
 
@@ -681,7 +681,7 @@ exit:
 #if 0
         if (!validateProgram(_program))
         {
-            NSLog(@"Failed to validate program");
+            DNSLog(@"Failed to validate program");
             return;
         }
 #endif
@@ -792,31 +792,31 @@ exit:
 
 - (void)applicationWillEnterForeground
 {
-    NSLog(@"IJKSDLGLView:applicationWillEnterForeground: %d", (int)[UIApplication sharedApplication].applicationState);
+    DNSLog(@"IJKSDLGLView:applicationWillEnterForeground: %d", (int)[UIApplication sharedApplication].applicationState);
     [self toggleGLPaused:NO];
 }
 
 - (void)applicationDidBecomeActive
 {
-    NSLog(@"IJKSDLGLView:applicationDidBecomeActive: %d", (int)[UIApplication sharedApplication].applicationState);
+    DNSLog(@"IJKSDLGLView:applicationDidBecomeActive: %d", (int)[UIApplication sharedApplication].applicationState);
     [self toggleGLPaused:NO];
 }
 
 - (void)applicationWillResignActive
 {
-    NSLog(@"IJKSDLGLView:applicationWillResignActive: %d", (int)[UIApplication sharedApplication].applicationState);
+    DNSLog(@"IJKSDLGLView:applicationWillResignActive: %d", (int)[UIApplication sharedApplication].applicationState);
     [self toggleGLPaused:YES];
 }
 
 - (void)applicationDidEnterBackground
 {
-    NSLog(@"IJKSDLGLView:applicationDidEnterBackground: %d", (int)[UIApplication sharedApplication].applicationState);
+    DNSLog(@"IJKSDLGLView:applicationDidEnterBackground: %d", (int)[UIApplication sharedApplication].applicationState);
     [self toggleGLPaused:YES];
 }
 
 - (void)applicationWillTerminate
 {
-    NSLog(@"IJKSDLGLView:applicationWillTerminate: %d", (int)[UIApplication sharedApplication].applicationState);
+    DNSLog(@"IJKSDLGLView:applicationWillTerminate: %d", (int)[UIApplication sharedApplication].applicationState);
     [self toggleGLPaused:YES];
 }
 

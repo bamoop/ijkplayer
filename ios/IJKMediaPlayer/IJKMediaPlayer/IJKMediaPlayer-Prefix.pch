@@ -17,3 +17,9 @@
     #import <OpenGLES/ES2/gl.h>
     #import <OpenGLES/ES2/glext.h>
 #endif
+
+#ifdef DEBUG
+#define DNSLog(format, ...) NSLog(format, ## __VA_ARGS__)
+#else
+#define DNSLog(format, ...)
+#endif

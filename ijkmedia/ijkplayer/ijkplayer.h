@@ -28,8 +28,10 @@
 
 #include "ijkmeta.h"
 
-#ifndef MPTRACE
-#define MPTRACE ALOGD
+#ifdef DEBUG
+    #define MPTRACE ALOGD
+#else
+    #define MPTRACE
 #endif
 
 typedef struct IjkMediaPlayer IjkMediaPlayer;

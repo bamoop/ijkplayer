@@ -112,7 +112,7 @@ void IJKFFIOStatDebugCallback(const char *url, int type, int bytes)
     if (s_ff_io_stat_bytes < s_ff_io_stat_check_points ||
         s_ff_io_stat_bytes > s_ff_io_stat_check_points + FFP_IO_STAT_STEP) {
         s_ff_io_stat_check_points = s_ff_io_stat_bytes;
-        NSLog(@"io-stat: %s, +%d = %"PRId64"\n", url, bytes, s_ff_io_stat_bytes);
+        DNSLog(@"io-stat: %s, +%d = %"PRId64"\n", url, bytes, s_ff_io_stat_bytes);
     }
 }
 
@@ -131,7 +131,7 @@ void IJKFFIOStatCompleteDebugCallback(const char *url,
     if (!av_strstart(url, "http:", NULL))
         return;
 
-    NSLog(@"io-stat-complete: %s, %"PRId64"/%"PRId64", %"PRId64"/%"PRId64"\n",
+    DNSLog(@"io-stat-complete: %s, %"PRId64"/%"PRId64", %"PRId64"/%"PRId64"\n",
           url, read_bytes, total_size, elpased_time, total_duration);
 }
 
@@ -329,7 +329,7 @@ inline static int getPlayerOption(IJKFFOptionCategory category)
             mp_category = IJKMP_OPT_CATEGORY_PLAYER;
             break;
         default:
-            NSLog(@"unknown option category: %d\n", category);
+            DNSLog(@"unknown option category: %d\n", category);
     }
     return mp_category;
 }
@@ -592,7 +592,7 @@ inline static void fillMetaInternal(NSMutableDictionary *meta, IjkMediaMeta *raw
         case FFP_MSG_FLUSH:
             break;
         case FFP_MSG_ERROR: {
-            NSLog(@"FFP_MSG_ERROR: %d", avmsg->arg1);
+            DNSLog(@"FFP_MSG_ERROR: %d", avmsg->arg1);
 
             [self setScreenOn:NO];
 
@@ -609,7 +609,7 @@ inline static void fillMetaInternal(NSMutableDictionary *meta, IjkMediaMeta *raw
             break;
         }
         case FFP_MSG_PREPARED: {
-            NSLog(@"FFP_MSG_PREPARED:");
+            DNSLog(@"FFP_MSG_PREPARED:");
 
             IjkMediaMeta *rawMeta = ijkmp_get_meta_l(_mediaPlayer);
             if (rawMeta) {
@@ -661,7 +661,7 @@ inline static void fillMetaInternal(NSMutableDictionary *meta, IjkMediaMeta *raw
                                     int64_t fps_den = ijkmeta_get_int64_l(streamRawMeta, IJKM_KEY_FPS_DEN, 0);
                                     if (fps_num > 0 && fps_den > 0) {
                                         _fpsInMeta = ((CGFloat)(fps_num)) / fps_den;
-                                        NSLog(@"fps in meta %f\n", _fpsInMeta);
+                                        DNSLog(@"fps in meta %f\n", _fpsInMeta);
                                     }
                                 }
 
@@ -713,7 +713,7 @@ inline static void fillMetaInternal(NSMutableDictionary *meta, IjkMediaMeta *raw
             break;
         }
         case FFP_MSG_VIDEO_SIZE_CHANGED:
-            NSLog(@"FFP_MSG_VIDEO_SIZE_CHANGED: %d, %d", avmsg->arg1, avmsg->arg2);
+            DNSLog(@"FFP_MSG_VIDEO_SIZE_CHANGED: %d, %d", avmsg->arg1, avmsg->arg2);
             if (avmsg->arg1 > 0)
                 _videoWidth = avmsg->arg1;
             if (avmsg->arg2 > 0)
@@ -721,14 +721,14 @@ inline static void fillMetaInternal(NSMutableDictionary *meta, IjkMediaMeta *raw
             // TODO: notify size changed
             break;
         case FFP_MSG_SAR_CHANGED:
-            NSLog(@"FFP_MSG_SAR_CHANGED: %d, %d", avmsg->arg1, avmsg->arg2);
+            DNSLog(@"FFP_MSG_SAR_CHANGED: %d, %d", avmsg->arg1, avmsg->arg2);
             if (avmsg->arg1 > 0)
                 _sampleAspectRatioNumerator = avmsg->arg1;
             if (avmsg->arg2 > 0)
                 _sampleAspectRatioDenominator = avmsg->arg2;
             break;
         case FFP_MSG_BUFFERING_START: {
-            NSLog(@"FFP_MSG_BUFFERING_START:");
+            DNSLog(@"FFP_MSG_BUFFERING_START:");
 
             _loadState = MPMovieLoadStateStalled;
 
@@ -738,7 +738,7 @@ inline static void fillMetaInternal(NSMutableDictionary *meta, IjkMediaMeta *raw
             break;
         }
         case FFP_MSG_BUFFERING_END: {
-            NSLog(@"FFP_MSG_BUFFERING_END:");
+            DNSLog(@"FFP_MSG_BUFFERING_END:");
 
             _loadState = MPMovieLoadStatePlayable | MPMovieLoadStatePlaythroughOK;
 
@@ -768,13 +768,13 @@ inline static void fillMetaInternal(NSMutableDictionary *meta, IjkMediaMeta *raw
              object:self];
             break;
         case FFP_MSG_SEEK_COMPLETE: {
-            NSLog(@"FFP_MSG_SEEK_COMPLETE:");
+            DNSLog(@"FFP_MSG_SEEK_COMPLETE:");
             _seeking = NO;
             break;
         }
         case FFP_MSG_VIDEO_DECODER_OPEN: {
             _isVideoToolboxOpen = avmsg->arg1;
-            NSLog(@"FFP_MSG_VIDEO_DECODER_OPEN: %@", _isVideoToolboxOpen ? @"true" : @"false");
+            DNSLog(@"FFP_MSG_VIDEO_DECODER_OPEN: %@", _isVideoToolboxOpen ? @"true" : @"false");
             [[NSNotificationCenter defaultCenter]
              postNotificationName:IJKMoviePlayerVideoDecoderOpenNotification
              object:self];
@@ -1018,7 +1018,7 @@ int format_control_message(void *opaque, int type, void *data, size_t data_size)
     int reason = [[[notification userInfo] valueForKey:AVAudioSessionInterruptionTypeKey] intValue];
     switch (reason) {
         case AVAudioSessionInterruptionTypeBegan: {
-            NSLog(@"IJKFFMoviePlayerController:audioSessionInterrupt: begin\n");
+            DNSLog(@"IJKFFMoviePlayerController:audioSessionInterrupt: begin\n");
             switch (self.playbackState) {
                 case MPMoviePlaybackStatePaused:
                 case MPMoviePlaybackStateStopped:
@@ -1033,7 +1033,7 @@ int format_control_message(void *opaque, int type, void *data, size_t data_size)
             break;
         }
         case AVAudioSessionInterruptionTypeEnded: {
-            NSLog(@"IJKFFMoviePlayerController:audioSessionInterrupt: end\n");
+            DNSLog(@"IJKFFMoviePlayerController:audioSessionInterrupt: end\n");
             [[IJKAudioKit sharedInstance] setActive:YES];
             if (_playingBeforeInterruption) {
                 [self play];
@@ -1045,17 +1045,17 @@ int format_control_message(void *opaque, int type, void *data, size_t data_size)
 
 - (void)applicationWillEnterForeground
 {
-    NSLog(@"IJKFFMoviePlayerController:applicationWillEnterForeground: %d", (int)[UIApplication sharedApplication].applicationState);
+    DNSLog(@"IJKFFMoviePlayerController:applicationWillEnterForeground: %d", (int)[UIApplication sharedApplication].applicationState);
 }
 
 - (void)applicationDidBecomeActive
 {
-    NSLog(@"IJKFFMoviePlayerController:applicationDidBecomeActive: %d", (int)[UIApplication sharedApplication].applicationState);
+    DNSLog(@"IJKFFMoviePlayerController:applicationDidBecomeActive: %d", (int)[UIApplication sharedApplication].applicationState);
 }
 
 - (void)applicationWillResignActive
 {
-    NSLog(@"IJKFFMoviePlayerController:applicationWillResignActive: %d", (int)[UIApplication sharedApplication].applicationState);
+    DNSLog(@"IJKFFMoviePlayerController:applicationWillResignActive: %d", (int)[UIApplication sharedApplication].applicationState);
     dispatch_async(dispatch_get_main_queue(), ^{
         if (_pauseInBackground) {
             [self pause];
@@ -1065,7 +1065,7 @@ int format_control_message(void *opaque, int type, void *data, size_t data_size)
 
 - (void)applicationDidEnterBackground
 {
-    NSLog(@"IJKFFMoviePlayerController:applicationDidEnterBackground: %d", (int)[UIApplication sharedApplication].applicationState);
+    DNSLog(@"IJKFFMoviePlayerController:applicationDidEnterBackground: %d", (int)[UIApplication sharedApplication].applicationState);
     dispatch_async(dispatch_get_main_queue(), ^{
         if (_pauseInBackground) {
             [self pause];
@@ -1075,7 +1075,7 @@ int format_control_message(void *opaque, int type, void *data, size_t data_size)
 
 - (void)applicationWillTerminate
 {
-    NSLog(@"IJKFFMoviePlayerController:applicationWillTerminate: %d", (int)[UIApplication sharedApplication].applicationState);
+    DNSLog(@"IJKFFMoviePlayerController:applicationWillTerminate: %d", (int)[UIApplication sharedApplication].applicationState);
     dispatch_async(dispatch_get_main_queue(), ^{
         if (_pauseInBackground) {
             [self pause];
