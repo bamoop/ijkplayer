@@ -44,7 +44,7 @@ static IJKFF_Pipenode *func_open_video_decoder(IJKFF_Pipeline *pipeline, FFPlaye
         node = ffpipenode_create_video_decoder_from_ios_videotoolbox(ffp);
     }
     if (node == NULL) {
-        ALOGE("vtb fail!!! switch to ffmpeg decode!!!! \n");
+//        ALOGE("vtb fail!!! switch to ffmpeg decode!!!! \n");
         node = ffpipenode_create_video_decoder_from_ffplay(ffp);
         opaque->is_videotoolbox_open = false;
     } else {

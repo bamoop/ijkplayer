@@ -834,7 +834,7 @@ int onControlResolveSegment(IJKFFMoviePlayerController *mpc, int type, void *dat
 
     IJKFormatSegmentContext *fsc = data;
     if (fsc == NULL || sizeof(IJKFormatSegmentContext) != data_size) {
-        NSLog(@"IJKAVF_CM_RESOLVE_SEGMENT: invalid call\n");
+        DNSLog(@"IJKAVF_CM_RESOLVE_SEGMENT: invalid call\n");
         return -1;
     }
 
