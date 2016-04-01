@@ -3386,7 +3386,7 @@ int ffp_wait_stop_l(FFPlayer *ffp)
 int ffp_set_rtsp_timeout_value(int64_t rtsp_time_out_value)
 {
     g_rtsp_last_decode_time = 0;
-    g_rtsp_time_out_value = g_rtsp_time_out_value;
+    g_rtsp_time_out_value = rtsp_time_out_value;
     return 0;
 }
             
