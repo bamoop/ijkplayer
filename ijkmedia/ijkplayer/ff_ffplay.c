@@ -91,8 +91,8 @@
 
 ///<Fixme(tbago)    add rtsp real time support
 #define FOR_RTSP_REAL_TIME_SUPPORT
-#define RTSP_TIME_OUT                  50000                ///< for rtsp read data time out
-static int64_t rtsp_last_decode_time    =0;                 ///< last decode frame time
+static int64_t g_rtsp_time_out_value      = 0;                ///< rtsp time out value
+static int64_t g_rtsp_last_decode_time    = 0;                ///< last decode frame time
 
 static int ffp_format_control_message(struct AVFormatContext *s, int type,
                                       void *data, size_t data_size);
@@ -2295,13 +2295,16 @@ static void stream_component_close(FFPlayer *ffp, int stream_index)
 static int decode_interrupt_cb(void *ctx)
 {
 #ifdef FOR_RTSP_REAL_TIME_SUPPORT
-    int64_t current_time = av_gettime_relative();
-    int64_t time_different = (current_time - rtsp_last_decode_time) / 100;
     FFPlayer *ffp = ctx;
-    if (time_different > RTSP_TIME_OUT
-        && rtsp_last_decode_time != 0) {
-        ffp_toggle_buffering(ffp, 1);
-        rtsp_last_decode_time = 0;
+    if (g_rtsp_time_out_value > 0) {
+        int64_t current_time = av_gettime_relative();
+        int64_t time_different = (current_time - g_rtsp_last_decode_time) / 1000;
+
+        if (time_different > g_rtsp_time_out_value
+            && g_rtsp_last_decode_time != 0) {
+            ffp_toggle_buffering(ffp, 1);
+            g_rtsp_last_decode_time = 0;
+        }
     }
     return ffp->is->abort_request;
 #else
@@ -2349,7 +2352,7 @@ static int read_thread(void *arg)
     int64_t io_tick_counter = 0;
 
 #ifdef FOR_RTSP_REAL_TIME_SUPPORT
-    rtsp_last_decode_time = av_gettime_relative();
+    g_rtsp_last_decode_time = av_gettime_relative();
 #endif
     
     memset(st_index, -1, sizeof(st_index));
@@ -2736,7 +2739,7 @@ static int read_thread(void *arg)
         ret = av_read_frame(ic, pkt);
 #ifdef FOR_RTSP_REAL_TIME_SUPPORT
         if (ret >= 0) {
-            rtsp_last_decode_time = av_gettime_relative();
+            g_rtsp_last_decode_time = av_gettime_relative();
         }
 #endif
         if (ret < 0) {
@@ -3380,6 +3383,13 @@ int ffp_wait_stop_l(FFPlayer *ffp)
     return 0;
 }
 
+int ffp_set_rtsp_timeout_value(int64_t rtsp_time_out_value)
+{
+    g_rtsp_last_decode_time = 0;
+    g_rtsp_time_out_value = g_rtsp_time_out_value;
+    return 0;
+}
+            
 int ffp_seek_to_l(FFPlayer *ffp, long msec)
 {
     assert(ffp);

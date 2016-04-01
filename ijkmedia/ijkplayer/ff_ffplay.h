@@ -60,6 +60,8 @@ int       ffp_is_paused_l(FFPlayer *ffp);
 int       ffp_prestop_l(FFPlayer *ffp);
 int       ffp_stop_l(FFPlayer *ffp);
 int       ffp_wait_stop_l(FFPlayer *ffp);
+/* rtsp real time support */
+int       ffp_set_rtsp_timeout_value(int64_t rtsp_time_out_value);  ///< millisecond
 
 /* all in milliseconds */
 int       ffp_seek_to_l(FFPlayer *ffp, long msec);

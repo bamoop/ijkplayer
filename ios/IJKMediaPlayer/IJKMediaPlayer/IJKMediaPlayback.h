@@ -39,6 +39,12 @@
 - (BOOL)isPlaying;
 - (void)shutdown;
 - (void)setPauseInBackground:(BOOL)pause;
+/**
+ *  For rtsp time out
+ *
+ *  @param rtspTimeoutValue: rtsp timout value in millisecond
+ */
+- (void)setRTSPTimeOutValue:(int64_t) rtspTimeoutValue;
 
 @property(nonatomic, readonly)  UIView *view;
 @property(nonatomic)            NSTimeInterval currentPlaybackTime;

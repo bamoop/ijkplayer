@@ -304,6 +304,10 @@ void IJKFFIOStatCompleteRegister(void (*cb)(const char *url,
     _pauseInBackground = pause;
 }
 
+- (void)setRTSPTimeOutValue:(int64_t) rtspTimeoutValue {
+    ijkmp_set_rtsp_timeout_value(rtspTimeoutValue);
+}
+
 - (BOOL)isVideoToolboxOpen
 {
     if (!_mediaPlayer)

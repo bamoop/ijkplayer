@@ -201,7 +201,8 @@ long            ijkmp_get_playable_duration(IjkMediaPlayer *mp);
 
 void           *ijkmp_get_weak_thiz(IjkMediaPlayer *mp);
 void           *ijkmp_set_weak_thiz(IjkMediaPlayer *mp, void *weak_thiz);
-
+/* rtsp real time support */
+int             ijkmp_set_rtsp_timeout_value(int64_t rtsp_time_out_value);
 /* return < 0 if aborted, 0 if no packet and > 0 if packet.  */
 int             ijkmp_get_msg(IjkMediaPlayer *mp, AVMessage *msg, int block);
 

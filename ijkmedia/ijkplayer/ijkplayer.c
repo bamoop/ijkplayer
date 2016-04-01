@@ -449,6 +449,11 @@ int ijkmp_stop(IjkMediaPlayer *mp)
     return retval;
 }
 
+int ijkmp_set_rtsp_timeout_value(int64_t rtsp_time_out_value)
+{
+    return ffp_set_rtsp_timeout_value(rtsp_time_out_value);
+}
+
 bool ijkmp_is_playing(IjkMediaPlayer *mp)
 {
     assert(mp);
