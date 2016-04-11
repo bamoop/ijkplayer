@@ -198,6 +198,16 @@ IjkMediaMeta *ijkmp_get_meta_l(IjkMediaPlayer *mp)
     return ret;
 }
 
+char *ijkmp_get_rtsp_padding(IjkMediaPlayer *mp)
+{
+    assert(mp);
+    
+    MPTRACE("%s\n", __func__);
+    char *rtspPadding = ffp_get_rtsp_nalu(mp->ffplayer);
+    MPTRACE("%s()=void\n", __func__);
+    return rtspPadding;
+}
+
 void ijkmp_shutdown_l(IjkMediaPlayer *mp)
 {
     assert(mp);

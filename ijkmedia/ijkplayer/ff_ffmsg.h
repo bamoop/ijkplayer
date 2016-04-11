@@ -44,4 +44,6 @@
 #define FFP_REQ_PAUSE                       20002
 #define FFP_REQ_SEEK                        20003
 
+#define FFP_RTSP_PADDING                    30001
+
 #endif

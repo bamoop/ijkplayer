@@ -2329,6 +2329,105 @@ static int is_realtime(AVFormatContext *s)
     return 0;
 }
 
+
+static unsigned int GetOneNalUnit(unsigned char *pNaluType,unsigned char *pBuffer,unsigned int size)
+{
+    unsigned int code, tmp, pos;
+    for (code=0xffffffff, pos = 0; pos <4; pos++) {
+        tmp = pBuffer[pos];
+        code = (code<<8)|tmp;
+    }
+    //ASSERT(code == 0x00000001); // check start code 0x00000001 (BE)
+    *pNaluType = pBuffer[pos++] & 0x1F;
+    for (code=0xffffffff; pos < size; pos++) {
+        tmp = pBuffer[pos];
+        if ((code=(code<<8)|tmp) == 0x00000001) {
+            break; //next start code is found
+        }
+    }
+    if (pos == size ) {
+        // next start code is not found, this must be the last nalu
+        return size;
+    } else {
+        return pos-4+1;
+    }
+}
+    
+static int removeEmulationPrevention(unsigned char* pdata,int size)
+{
+    unsigned char *readPtr, *writePtr;
+    unsigned char byte;
+    unsigned int i,tmp;
+    unsigned int zeroCount;
+    tmp = size;
+    readPtr = writePtr = pdata;
+    zeroCount = 0;
+    for (i = tmp; i--;)
+    {
+        if ((zeroCount == 2) && (*readPtr == 0x03))
+        {
+            /* emulation prevention byte shall be followed by one of the
+             * following bytes: 0x00, 0x01, 0x02, 0x03. This implies that
+             * emulation prevention 0x03 byte shall not be the last byte
+             * of the stream. */
+            // if ( (i == 0) || (*(readPtr+1) > 0x03) ){
+            //LOGV("last byte shall not be 0x03\n");
+            // return 0xFFFF;
+            //}
+            /* do not write emulation prevention byte */
+            readPtr++;
+            zeroCount = 0;
+        }
+        else
+        {
+            /* NAL unit shall not contain byte sequences 0x000000,
+             * 0x000001 or 0x000002 */
+            if ( (zeroCount == 2) && (*readPtr <= 0x02) ){
+                ALOGD("val = %02x%02x%02x%02x,%02x%02x\n", *(readPtr-2), *(readPtr-1), *(readPtr), *(readPtr+1), *(readPtr+2), *(readPtr+3));
+                //LOGV("nal unit shall not contain byte 0x000000,0x000001,0x000002\n");
+                return 0xFFFF;
+                
+            }
+            
+            if (*readPtr == 0) {
+                zeroCount++;
+            }
+            else {
+                zeroCount = 0;
+            }
+            *writePtr++ = *readPtr++;
+        }
+    }
+    
+    /* (readPtr - writePtr) indicates number of "removed" emulation
+     * prevention bytes -> subtract from stream buffer size */
+    return (size - (unsigned char)(readPtr - writePtr));
+}
+
+static int get_filler_nalu(FFPlayer *ffp,unsigned char* pData,unsigned int size)
+{
+    unsigned int nal_unit_length;
+    unsigned char nal_unit_type;
+    unsigned int cursor = 0;
+    VideoState *is = ffp->is;
+    do {
+        nal_unit_length = GetOneNalUnit(&nal_unit_type, pData+cursor, size-cursor);
+        if (nal_unit_type == 12) {
+            ALOGD(" nal_unit_length =%d,nal_unit_type =%d\n", nal_unit_length, nal_unit_type);
+        
+            //unsigned char tmp[8];
+            
+            //memcpy(tmp,pData+cursor+(nal_unit_length-8),sizeof(tmp));
+            // LOGV("value =%02x%02x%02x%02x %02x%02x%02x%02x\n",tmp[0],tmp[1],tmp[2],tmp[3],tmp[4],tmp[5],tmp[6],tmp[7]);
+            
+            memcpy(is->padding, pData+cursor+4, nal_unit_length-4);
+            return removeEmulationPrevention(is->padding, nal_unit_length-4);
+        }
+        cursor += nal_unit_length;
+    } while (cursor < size);
+    return 0;
+}
+
 /* this thread gets the stream from the disk or the network */
 static int read_thread(void *arg)
 {
@@ -2739,7 +2838,13 @@ static int read_thread(void *arg)
         ret = av_read_frame(ic, pkt);
 #ifdef FOR_RTSP_REAL_TIME_SUPPORT
         if (ret >= 0) {
+            ///< get last rtsp decode time
             g_rtsp_last_decode_time = av_gettime_relative();
+            ///< get the rtsp padding
+            int nalu_ret = get_filler_nalu(ffp, pkt->data, pkt->size);
+            if (nalu_ret > 0) {
+                ffp_notify_msg1(ffp, FFP_RTSP_PADDING);
+            }
         }
 #endif
         if (ret < 0) {
@@ -3711,6 +3816,14 @@ IjkMediaMeta *ffp_get_meta_l(FFPlayer *ffp)
         return NULL;
 
     return ffp->meta;
+}
+
+char *ffp_get_rtsp_nalu(FFPlayer *ffp)
+{
+    if (!ffp) {
+        return NULL;
+    }
+    return ffp->is->padding;
 }
 
 static int ffp_format_control_message(struct AVFormatContext *s, int type,

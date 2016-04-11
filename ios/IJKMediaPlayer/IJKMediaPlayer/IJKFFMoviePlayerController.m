@@ -784,6 +784,15 @@ inline static void fillMetaInternal(NSMutableDictionary *meta, IjkMediaMeta *raw
              object:self];
             break;
         }
+        case FFP_RTSP_PADDING: {
+            DNSLog(@"FFP RTSP padding");
+            char *rtspPaddingBuffer = ijkmp_get_rtsp_padding(_mediaPlayer);
+            NSData *rtspPaddingData = [[NSData alloc] initWithBytes:rtspPaddingBuffer length:256];
+            NSDictionary* userInfo = @{@"rtspPadding" : rtspPaddingData};
+            [[NSNotificationCenter defaultCenter] postNotificationName:IJKMoviePlayerRTSPPaddingNotification
+                                                                object:self
+                                                              userInfo:userInfo];
+        }
         default:
             // NSLog(@"unknown FFP_MSG_xxx(%d)", avmsg->what);
             break;

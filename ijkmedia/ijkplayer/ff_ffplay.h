@@ -99,4 +99,5 @@ void      ffp_set_audio_codec_info(FFPlayer *ffp, const char *module, const char
 // must be freed with free();
 struct IjkMediaMeta *ffp_get_meta_l(FFPlayer *ffp);
 
+char *ffp_get_rtsp_nalu(FFPlayer *ffp);
 #endif

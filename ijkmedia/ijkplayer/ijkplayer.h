@@ -205,5 +205,7 @@ void           *ijkmp_set_weak_thiz(IjkMediaPlayer *mp, void *weak_thiz);
 int             ijkmp_set_rtsp_timeout_value(int64_t rtsp_time_out_value);
 /* return < 0 if aborted, 0 if no packet and > 0 if packet.  */
 int             ijkmp_get_msg(IjkMediaPlayer *mp, AVMessage *msg, int block);
+/* get rtsp padding data */
+char *          ijkmp_get_rtsp_padding(IjkMediaPlayer *mp);
 
 #endif

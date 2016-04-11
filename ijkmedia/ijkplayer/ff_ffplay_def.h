@@ -370,6 +370,8 @@ typedef struct VideoState {
     int is_video_high_res; // above 1080p
 
     PacketQueue *buffer_indicator_queue;
+    
+    char padding[256];
 } VideoState;
 
 /* options specified by the user */
