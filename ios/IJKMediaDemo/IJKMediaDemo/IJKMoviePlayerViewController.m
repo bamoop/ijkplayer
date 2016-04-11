@@ -265,6 +265,12 @@
     }
 }
 
+- (void)getRtspPaddingData:(NSNotification*)notification {
+    NSDictionary *userInfo = notification.userInfo;
+    NSData *rtspPaddingData = userInfo[@"rtspPadding"];
+    NSLog(@"rtsp padding data:%@", rtspPaddingData);
+}
+
 #pragma mark Install Movie Notifications
 
 /* Register observers for the various movie object notifications. */
@@ -289,6 +295,11 @@
                                              selector:@selector(moviePlayBackStateDidChange:)
                                                  name:IJKMoviePlayerPlaybackStateDidChangeNotification
                                                object:_player];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(getRtspPaddingData:)
+                                                 name:IJKMoviePlayerRTSPPaddingNotification
+                                               object:_player];
 }
 
 #pragma mark Remove Movie Notification Handlers
@@ -300,6 +311,7 @@
     [[NSNotificationCenter defaultCenter]removeObserver:self name:IJKMoviePlayerPlaybackDidFinishNotification object:_player];
     [[NSNotificationCenter defaultCenter]removeObserver:self name:IJKMediaPlaybackIsPreparedToPlayDidChangeNotification object:_player];
     [[NSNotificationCenter defaultCenter]removeObserver:self name:IJKMoviePlayerPlaybackStateDidChangeNotification object:_player];
+    [[NSNotificationCenter defaultCenter]removeObserver:self name:IJKMoviePlayerRTSPPaddingNotification object:_player];
 }
 
 @end
