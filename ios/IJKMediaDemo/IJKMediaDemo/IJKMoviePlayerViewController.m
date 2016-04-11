@@ -80,7 +80,7 @@
     self.view.autoresizesSubviews = YES;
     [self.view addSubview:self.player.view];
     [self.view addSubview:self.mediaControl];
-
+    [self.player setRTSPTimeOutValue:5000];
     self.mediaControl.delegatePlayer = self.player;
 }
 
