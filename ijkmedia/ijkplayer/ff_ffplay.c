@@ -2420,8 +2420,8 @@ static int get_filler_nalu(FFPlayer *ffp,unsigned char* pData,unsigned int size)
             //memcpy(tmp,pData+cursor+(nal_unit_length-8),sizeof(tmp));
             // LOGV("value =%02x%02x%02x%02x %02x%02x%02x%02x\n",tmp[0],tmp[1],tmp[2],tmp[3],tmp[4],tmp[5],tmp[6],tmp[7]);
             
-            memcpy(is->padding, pData+cursor+4, nal_unit_length-4);
-            return removeEmulationPrevention(is->padding, nal_unit_length-4);
+            memcpy(is->padding, pData+cursor+5, nal_unit_length-5);
+            return removeEmulationPrevention(is->padding, nal_unit_length-5);
         }
         cursor += nal_unit_length;
     } while (cursor < size);
@@ -2841,9 +2841,11 @@ static int read_thread(void *arg)
             ///< get last rtsp decode time
             g_rtsp_last_decode_time = av_gettime_relative();
             ///< get the rtsp padding
-            int nalu_ret = get_filler_nalu(ffp, pkt->data, pkt->size);
-            if (nalu_ret > 0) {
-                ffp_notify_msg1(ffp, FFP_RTSP_PADDING);
+            if ((pkt->stream_index == is->video_stream)&&(*(int*)(pkt->data+(pkt->size-4))== 0xffffffff)) {
+                int nalu_ret = get_filler_nalu(ffp, pkt->data, pkt->size);
+                if (nalu_ret > 0) {
+                    ffp_notify_msg1(ffp, FFP_RTSP_PADDING);
+                }
             }
         }
 #endif
