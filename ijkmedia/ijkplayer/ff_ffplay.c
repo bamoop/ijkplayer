@@ -2413,7 +2413,7 @@ static int get_filler_nalu(FFPlayer *ffp,unsigned char* pData,unsigned int size)
     do {
         nal_unit_length = GetOneNalUnit(&nal_unit_type, pData+cursor, size-cursor);
         if (nal_unit_type == 12) {
-            ALOGD(" nal_unit_length =%d,nal_unit_type =%d\n", nal_unit_length, nal_unit_type);
+//            ALOGD(" nal_unit_length =%d,nal_unit_type =%d\n", nal_unit_length, nal_unit_type);
         
             //unsigned char tmp[8];
             
