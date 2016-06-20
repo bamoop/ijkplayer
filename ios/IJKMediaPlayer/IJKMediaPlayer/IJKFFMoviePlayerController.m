@@ -39,7 +39,8 @@ static const char *kIJKFFRequiredFFmpegVersion = "n2.7-24-g58b28fc";
 @property(nonatomic, readonly) NSDictionary *mediaMeta;
 @property(nonatomic, readonly) NSDictionary *videoMeta;
 @property(nonatomic, readonly) NSDictionary *audioMeta;
-
+///< 防止RTSP Padding导致的访问内存问题
+@property (nonatomic) BOOL     alreadyShutdown;
 @end
 
 @implementation IJKFFMoviePlayerController {
@@ -417,6 +418,9 @@ inline static int getPlayerOption(IJKFFOptionCategory category)
 {
     if (!_mediaPlayer)
         return;
+    
+    self.alreadyShutdown = YES;
+    
     [self unregisterApplicationObservers];
     [self setScreenOn:NO];
 
@@ -785,13 +789,19 @@ inline static void fillMetaInternal(NSMutableDictionary *meta, IjkMediaMeta *raw
             break;
         }
         case FFP_RTSP_PADDING: {
-            DNSLog(@"FFP RTSP padding");
-            char *rtspPaddingBuffer = ijkmp_get_rtsp_padding(_mediaPlayer);
-            NSData *rtspPaddingData = [[NSData alloc] initWithBytes:rtspPaddingBuffer length:256];
-            NSDictionary* userInfo = @{@"rtspPadding" : rtspPaddingData};
-            [[NSNotificationCenter defaultCenter] postNotificationName:IJKMoviePlayerRTSPPaddingNotification
-                                                                object:self
-                                                              userInfo:userInfo];
+            if (self.alreadyShutdown) {
+                break;
+            }
+            else {
+                DNSLog(@"FFP RTSP padding");
+                char *rtspPaddingBuffer = ijkmp_get_rtsp_padding(_mediaPlayer);
+                NSData *rtspPaddingData = [[NSData alloc] initWithBytes:rtspPaddingBuffer length:256];
+                NSDictionary* userInfo = @{@"rtspPadding" : rtspPaddingData};
+                [[NSNotificationCenter defaultCenter] postNotificationName:IJKMoviePlayerRTSPPaddingNotification
+                                                                    object:self
+                                                                  userInfo:userInfo];
+                break;
+            }
         }
         default:
             // NSLog(@"unknown FFP_MSG_xxx(%d)", avmsg->what);
