@@ -271,6 +271,13 @@
     NSLog(@"rtsp padding data:%@", rtspPaddingData);
 }
 
+- (void)videoSizeChange:(NSNotification *) notification {
+    NSDictionary *userInfo = notification.userInfo;
+    NSInteger videoWidth = [userInfo[@"VideoWidth"] integerValue];
+    NSInteger videoHeight = [userInfo[@"VideoHeight"] integerValue];
+    NSLog(@"width:%lld, height:%lld", videoWidth, videoHeight);
+}
+
 #pragma mark Install Movie Notifications
 
 /* Register observers for the various movie object notifications. */
@@ -299,6 +306,11 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(getRtspPaddingData:)
                                                  name:IJKMoviePlayerRTSPPaddingNotification
+                                               object:_player];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(videoSizeChange:)
+                                                 name:IJKMoviePlayerVideoSizeChangedNotification
                                                object:_player];
 }
 

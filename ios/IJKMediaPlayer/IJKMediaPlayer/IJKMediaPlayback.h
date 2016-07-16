@@ -86,6 +86,9 @@ IJK_EXTERN NSString *const IJKMoviePlayerIsAirPlayVideoActiveDidChangeNotificati
 IJK_EXTERN NSString *const IJKMoviePlayerVideoDecoderOpenNotification;
 
 IJK_EXTERN NSString *const IJKMoviePlayerRTSPPaddingNotification;
+
+IJK_EXTERN NSString *const IJKMoviePlayerVideoSizeChangedNotification;
+
 @end
 
 #pragma mark IJKMediaResource
