@@ -722,14 +722,21 @@ inline static void fillMetaInternal(NSMutableDictionary *meta, IjkMediaMeta *raw
         }
         case FFP_MSG_VIDEO_SIZE_CHANGED:
             DNSLog(@"FFP_MSG_VIDEO_SIZE_CHANGED: %d, %d", avmsg->arg1, avmsg->arg2);
-            if (avmsg->arg1 > 0)
+            BOOL videoSizeChange = NO;
+            if (avmsg->arg1 > 0 && _videoWidth != avmsg->arg1) {
                 _videoWidth = avmsg->arg1;
-            if (avmsg->arg2 > 0)
+                videoSizeChange = YES;
+            }
+            if (avmsg->arg2 > 0 && _videoHeight != avmsg->arg2) {
                 _videoHeight = avmsg->arg2;
-            [[NSNotificationCenter defaultCenter] postNotificationName:IJKMoviePlayerVideoSizeChangedNotification
-                                                                object:self
-                                                              userInfo:@{@"VideoWidth": @(_videoWidth),
-                                                                         @"VideoHeight": @(_videoHeight)}];
+                videoSizeChange = YES;
+            }
+            if (videoSizeChange) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:IJKMoviePlayerVideoSizeChangedNotification
+                                                                    object:self
+                                                                  userInfo:@{@"VideoWidth": @(_videoWidth),
+                                                                             @"VideoHeight": @(_videoHeight)}];
+            }
             // TODO: notify size changed
             break;
         case FFP_MSG_SAR_CHANGED:
