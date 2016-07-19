@@ -46,4 +46,5 @@
 
 #define FFP_RTSP_PADDING                    30001
 
+#define FFP_GET_DECODED_FRAME               40001
 #endif

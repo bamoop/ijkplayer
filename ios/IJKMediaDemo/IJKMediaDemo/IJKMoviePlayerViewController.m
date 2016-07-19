@@ -81,6 +81,7 @@
     [self.view addSubview:self.player.view];
     [self.view addSubview:self.mediaControl];
     [self.player setRTSPTimeOutValue:5000];
+    [self.player needVideoDecodedFrame:YES];
     self.mediaControl.delegatePlayer = self.player;
 }
 
@@ -266,18 +267,27 @@
 }
 
 - (void)getRtspPaddingData:(NSNotification*)notification {
-    NSDictionary *userInfo = notification.userInfo;
-    NSData *rtspPaddingData = userInfo[@"rtspPadding"];
-    NSLog(@"rtsp padding data:%@", rtspPaddingData);
+//    NSDictionary *userInfo = notification.userInfo;
+//    NSData *rtspPaddingData = userInfo[@"rtspPadding"];
+//    NSLog(@"rtsp padding data:%@", rtspPaddingData);
 }
 
 - (void)videoSizeChange:(NSNotification *) notification {
     NSDictionary *userInfo = notification.userInfo;
     NSInteger videoWidth = [userInfo[@"VideoWidth"] integerValue];
     NSInteger videoHeight = [userInfo[@"VideoHeight"] integerValue];
-    NSLog(@"width:%lld, height:%lld", videoWidth, videoHeight);
+    NSLog(@"width:%d, height:%d", (int32_t)videoWidth, (int32_t)videoHeight);
 }
 
+- (void)getVideoFrame:(NSNotification *) notification {
+    NSDictionary *userInfo = notification.userInfo;
+    NSData *frameData = userInfo[@"decodedData"];
+    NSInteger linesize0 = [userInfo[@"linesize0"] integerValue];
+    NSInteger linesize1 = [userInfo[@"linesize1"] integerValue];
+    NSInteger linesize2 = [userInfo[@"linesize2"] integerValue];
+    NSInteger pts = [userInfo[@"pts"] integerValue];
+    NSLog(@"frame %d,linesize0:%d,linesize1:%d,linesize2:%d,pts:%d", (int32_t)frameData.length, (int32_t)linesize0, (int32_t)linesize1, (int32_t)linesize2, (int32_t)pts);
+}
 #pragma mark Install Movie Notifications
 
 /* Register observers for the various movie object notifications. */
@@ -312,6 +322,11 @@
                                              selector:@selector(videoSizeChange:)
                                                  name:IJKMoviePlayerVideoSizeChangedNotification
                                                object:_player];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(getVideoFrame:)
+                                                 name:IJKMoviePlayerGetVideoFrameNotification
+                                               object:_player];
 }
 
 #pragma mark Remove Movie Notification Handlers
@@ -324,6 +339,7 @@
     [[NSNotificationCenter defaultCenter]removeObserver:self name:IJKMediaPlaybackIsPreparedToPlayDidChangeNotification object:_player];
     [[NSNotificationCenter defaultCenter]removeObserver:self name:IJKMoviePlayerPlaybackStateDidChangeNotification object:_player];
     [[NSNotificationCenter defaultCenter]removeObserver:self name:IJKMoviePlayerRTSPPaddingNotification object:_player];
+    [[NSNotificationCenter defaultCenter]removeObserver:self name:IJKMoviePlayerGetVideoFrameNotification object:_player];
 }
 
 @end

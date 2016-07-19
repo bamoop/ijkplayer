@@ -83,4 +83,16 @@ size_t        ijkmeta_get_children_count_l(IjkMediaMeta *meta);
 // do not free
 IjkMediaMeta *ijkmeta_get_child_l(IjkMediaMeta *meta, size_t index);
 
+//Image frame definition
+typedef struct
+{
+    int width; //image width
+    int height; //image height
+    
+    uint8_t *data[3]; //image data (3 channel YUV)
+    int linesize[3]; //image stride (width + image padding = linesize)
+    
+    int64_t pts;
+} DecodedFrame;
+
 #endif//IJKPLAYER__IJKMETA_H

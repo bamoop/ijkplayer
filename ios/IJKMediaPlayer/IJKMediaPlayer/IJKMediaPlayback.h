@@ -46,6 +46,13 @@
  */
 - (void)setRTSPTimeOutValue:(int64_t) rtspTimeoutValue;
 
+/**
+ *  for get decode yuv data
+ *
+ *  @param start
+ */
+- (void)needVideoDecodedFrame:(BOOL) need;
+
 @property(nonatomic, readonly)  UIView *view;
 @property(nonatomic)            NSTimeInterval currentPlaybackTime;
 @property(nonatomic, readonly)  NSTimeInterval duration;
@@ -89,6 +96,7 @@ IJK_EXTERN NSString *const IJKMoviePlayerRTSPPaddingNotification;
 
 IJK_EXTERN NSString *const IJKMoviePlayerVideoSizeChangedNotification;
 
+IJK_EXTERN NSString *const IJKMoviePlayerGetVideoFrameNotification;
 @end
 
 #pragma mark IJKMediaResource

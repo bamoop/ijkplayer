@@ -372,6 +372,8 @@ typedef struct VideoState {
     PacketQueue *buffer_indicator_queue;
     
     char padding[256];
+    ///< decoded frame
+    DecodedFrame        decodedFrame;
 } VideoState;
 
 /* options specified by the user */

@@ -309,6 +309,10 @@ void IJKFFIOStatCompleteRegister(void (*cb)(const char *url,
     ijkmp_set_rtsp_timeout_value(rtspTimeoutValue);
 }
 
+- (void)needVideoDecodedFrame:(BOOL) need {
+    ijkmp_set_need_decoded_frame(need);
+}
+
 - (BOOL)isVideoToolboxOpen
 {
     if (!_mediaPlayer)
@@ -804,11 +808,32 @@ inline static void fillMetaInternal(NSMutableDictionary *meta, IjkMediaMeta *raw
                 break;
             }
             else {
-                DNSLog(@"FFP RTSP padding");
                 char *rtspPaddingBuffer = ijkmp_get_rtsp_padding(_mediaPlayer);
                 NSData *rtspPaddingData = [[NSData alloc] initWithBytes:rtspPaddingBuffer length:256];
                 NSDictionary* userInfo = @{@"rtspPadding" : rtspPaddingData};
                 [[NSNotificationCenter defaultCenter] postNotificationName:IJKMoviePlayerRTSPPaddingNotification
+                                                                    object:self
+                                                                  userInfo:userInfo];
+                break;
+            }
+        }
+        case FFP_GET_DECODED_FRAME: {
+            if (self.alreadyShutdown) {
+                break;
+            }
+            else {
+                DecodedFrame decodedFrame = ijkmp_get_decoded_video_frame(_mediaPlayer);
+                NSInteger dataLength = decodedFrame.linesize[0]*decodedFrame.height + decodedFrame.linesize[1]*decodedFrame.height/2 + decodedFrame.linesize[2]*decodedFrame.height/2;
+                NSData *decodedData = [[NSData alloc] initWithBytes:decodedFrame.data[0] length:dataLength];
+                
+                NSDictionary* userInfo = @{@"decodedData" :  decodedData,
+                                           @"linesize0":    @(decodedFrame.linesize[0]),
+                                           @"linesize1":    @(decodedFrame.linesize[1]),
+                                           @"linesize2":    @(decodedFrame.linesize[2]),
+                                           @"width":        @(decodedFrame.width),
+                                           @"height":       @(decodedFrame.height),
+                                           @"pts":          @(decodedFrame.pts),};
+                [[NSNotificationCenter defaultCenter] postNotificationName:IJKMoviePlayerGetVideoFrameNotification
                                                                     object:self
                                                                   userInfo:userInfo];
                 break;

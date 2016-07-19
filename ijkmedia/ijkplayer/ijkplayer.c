@@ -464,6 +464,14 @@ int ijkmp_set_rtsp_timeout_value(int64_t rtsp_time_out_value)
     return ffp_set_rtsp_timeout_value(rtsp_time_out_value);
 }
 
+void ijkmp_set_need_decoded_frame(int need) {
+    return ffp_set_need_decoded_frame(need);
+}
+
+DecodedFrame ijkmp_get_decoded_video_frame(IjkMediaPlayer *mp) {
+    return ffp_get_decoded_video_frame(mp->ffplayer);
+}
+
 bool ijkmp_is_playing(IjkMediaPlayer *mp)
 {
     assert(mp);

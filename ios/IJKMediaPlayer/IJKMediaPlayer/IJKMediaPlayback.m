@@ -32,6 +32,9 @@ NSString *const IJKMoviePlayerIsAirPlayVideoActiveDidChangeNotification = @"IJKM
 
 NSString *const IJKMoviePlayerVideoDecoderOpenNotification = @"IJKMoviePlayerVideoDecoderOpenNotification";
 
-NSString *const IJKMoviePlayerRTSPPaddingNotification = @"IJKMoviePlayerRTSPPaddingNotificaiont";
+NSString *const IJKMoviePlayerRTSPPaddingNotification = @"IJKMoviePlayerRTSPPaddingNotification";
 
 NSString *const IJKMoviePlayerVideoSizeChangedNotification = @"IJKMoviePlayerVideoSizeChangedNotification";
+
+NSString *const IJKMoviePlayerGetVideoFrameNotification = @"IJKMoviePlayerGetVideoFrameNotification";
+

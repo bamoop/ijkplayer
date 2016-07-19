@@ -89,10 +89,13 @@
 
 #define FFP_IO_STAT_STEP (50 * 1024)
 
-///<Fixme(tbago)    add rtsp real time support
+///<FixMe(tbago)    add rtsp real time support
 #define FOR_RTSP_REAL_TIME_SUPPORT
 static int64_t g_rtsp_time_out_value      = 0;                ///< rtsp time out value
 static int64_t g_rtsp_last_decode_time    = 0;                ///< last decode frame time
+
+///<FixMe(anxs) for decoded frame
+static int g_need_decoded_frame           = 0;
 
 static int ffp_format_control_message(struct AVFormatContext *s, int type,
                                       void *data, size_t data_size);
@@ -1663,6 +1666,25 @@ static int ffplay_video_thread(void *arg)
         if (!ret)
             continue;
 
+        if (g_need_decoded_frame && frame != NULL) {
+            ///< FixMe(anxs) get decoded frame
+            av_free(is->decodedFrame.data[0]);
+            uint8_t *bufferMemory = (uint8_t *)av_malloc(frame->linesize[0]*frame->height + frame->linesize[1]*frame->height/2 + frame->linesize[2]*frame->height/2);
+            is->decodedFrame.width  = frame->width;
+            is->decodedFrame.height = frame->height;
+            is->decodedFrame.linesize[0] = frame->linesize[0];
+            is->decodedFrame.linesize[1] = frame->linesize[1];
+            is->decodedFrame.linesize[2] = frame->linesize[2];
+            is->decodedFrame.data[0] = bufferMemory;
+            is->decodedFrame.data[1] = bufferMemory + frame->linesize[0]*frame->height;
+            is->decodedFrame.data[2] = bufferMemory + frame->linesize[0]*frame->height + frame->linesize[1]*frame->height/2;
+            memcpy(is->decodedFrame.data[0], frame->data[0], frame->linesize[0]*frame->height);
+            memcpy(is->decodedFrame.data[1], frame->data[1], frame->linesize[1]*frame->height/2);
+            memcpy(is->decodedFrame.data[2], frame->data[2], frame->linesize[2]*frame->height/2);
+            is->decodedFrame.pts = frame->pts;
+            ffp_notify_msg1(ffp, FFP_GET_DECODED_FRAME);
+        }
+        
 #if CONFIG_AVFILTER
         if (   last_w != frame->width
             || last_h != frame->height
@@ -3495,6 +3517,14 @@ int ffp_set_rtsp_timeout_value(int64_t rtsp_time_out_value)
     g_rtsp_last_decode_time = 0;
     g_rtsp_time_out_value = rtsp_time_out_value;
     return 0;
+}
+ 
+void ffp_set_need_decoded_frame(int need) {
+    g_need_decoded_frame = need;
+}
+            
+DecodedFrame ffp_get_decoded_video_frame(FFPlayer *ffp) {
+    return ffp->is->decodedFrame;
 }
             
 int ffp_seek_to_l(FFPlayer *ffp, long msec)
