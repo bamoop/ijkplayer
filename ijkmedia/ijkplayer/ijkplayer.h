@@ -207,8 +207,11 @@ int             ijkmp_set_rtsp_timeout_value(int64_t rtsp_time_out_value);
 int             ijkmp_get_msg(IjkMediaPlayer *mp, AVMessage *msg, int block);
 /* get rtsp padding data */
 char *          ijkmp_get_rtsp_padding(IjkMediaPlayer *mp);
+/* get decoded yuv data */
 void            ijkmp_set_need_decoded_frame(int need);
-
 DecodedFrame    ijkmp_get_decoded_video_frame(IjkMediaPlayer *mp);
+/* get h264 raw data */
+void            ijkmp_set_need_h264_data(int need);
+H264Data        ijkmp_get_h264_data(IjkMediaPlayer *mp);
 
 #endif

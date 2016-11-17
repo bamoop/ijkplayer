@@ -101,7 +101,11 @@ struct IjkMediaMeta *ffp_get_meta_l(FFPlayer *ffp);
 
 char    *ffp_get_rtsp_nalu(FFPlayer *ffp);
 
-void     ffp_set_need_decoded_frame(int need);
+void        ffp_set_need_decoded_frame(int need);
 
 DecodedFrame ffp_get_decoded_video_frame(FFPlayer *ffp);
+
+void         ffp_set_need_h264_data(int need);
+
+H264Data     ffp_get_h264_data(FFPlayer *ffp);
 #endif

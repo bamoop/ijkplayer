@@ -313,6 +313,10 @@ void IJKFFIOStatCompleteRegister(void (*cb)(const char *url,
     ijkmp_set_need_decoded_frame(need);
 }
 
+- (void)needH264Data:(BOOL)need {
+    ijkmp_set_need_h264_data(need);
+}
+
 - (BOOL)isVideoToolboxOpen
 {
     if (!_mediaPlayer)

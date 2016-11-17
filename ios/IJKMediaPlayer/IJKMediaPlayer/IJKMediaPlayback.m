@@ -38,3 +38,5 @@ NSString *const IJKMoviePlayerVideoSizeChangedNotification = @"IJKMoviePlayerVid
 
 NSString *const IJKMoviePlayerGetVideoFrameNotification = @"IJKMoviePlayerGetVideoFrameNotification";
 
+NSString *const IJKMoviePlayerGetH264DataNotificaiton = @"IJKMoviePlayerGetH264DataNotificaiton";
+

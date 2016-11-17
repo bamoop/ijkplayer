@@ -49,9 +49,15 @@
 /**
  *  for get decode yuv data
  *
- *  @param start
+ *  @param need
  */
 - (void)needVideoDecodedFrame:(BOOL) need;
+
+/**
+ * for get h264 raw data
+ * @praram need
+ */
+- (void)needH264Data:(BOOL) need;
 
 @property(nonatomic, readonly)  UIView *view;
 @property(nonatomic)            NSTimeInterval currentPlaybackTime;
@@ -97,6 +103,8 @@ IJK_EXTERN NSString *const IJKMoviePlayerRTSPPaddingNotification;
 IJK_EXTERN NSString *const IJKMoviePlayerVideoSizeChangedNotification;
 
 IJK_EXTERN NSString *const IJKMoviePlayerGetVideoFrameNotification;
+
+IJK_EXTERN NSString *const IJKMoviePlayerGetH264DataNotificaiton;
 @end
 
 #pragma mark IJKMediaResource

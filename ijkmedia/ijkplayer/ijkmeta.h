@@ -95,4 +95,13 @@ typedef struct
     int64_t pts;
 } DecodedFrame;
 
+typedef struct
+{
+    uint8_t     *data;
+    uint32_t    size;
+    int64_t     pts;
+    int64_t     dts;
+    int32_t     keyFrame;
+}H264Data;
+
 #endif//IJKPLAYER__IJKMETA_H

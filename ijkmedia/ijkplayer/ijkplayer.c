@@ -472,6 +472,14 @@ DecodedFrame ijkmp_get_decoded_video_frame(IjkMediaPlayer *mp) {
     return ffp_get_decoded_video_frame(mp->ffplayer);
 }
 
+void ijkmp_set_need_h264_data(int need) {
+    return ffp_set_need_h264_data(need);
+}
+
+H264Data ijkmp_get_h264_data(IjkMediaPlayer *mp) {
+    return ffp_get_h264_data(mp->ffplayer);
+}
+
 bool ijkmp_is_playing(IjkMediaPlayer *mp)
 {
     assert(mp);

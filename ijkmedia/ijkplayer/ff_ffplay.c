@@ -97,6 +97,8 @@ static int64_t g_rtsp_last_decode_time    = 0;                ///< last decode f
 ///<FixMe(anxs) for decoded frame
 static int g_need_decoded_frame           = 0;
 
+static int g_need_h264_data               = 0;
+
 static int ffp_format_control_message(struct AVFormatContext *s, int type,
                                       void *data, size_t data_size);
 
@@ -2871,6 +2873,25 @@ static int read_thread(void *arg)
             }
         }
 #endif
+        if (g_need_h264_data)
+        {
+            ///< get h264 data
+            if (pkt->stream_index == is->video_stream) {
+                is->h264Data.data = pkt->data;
+                is->h264Data.size = pkt->size;
+                is->h264Data.pts  = pkt->pts;
+                is->h264Data.dts  = pkt->dts;
+                
+                if ((pkt->flags & AV_PKT_FLAG_KEY) != 0) {
+                    is->h264Data.keyFrame = 1;
+                }
+                else {
+                    is->h264Data.keyFrame = 0;
+                }
+                
+                ffp_notify_msg1(ffp, FFP_GET_H264_DATA);
+            }
+        }
         if (ret < 0) {
             if ((ret == AVERROR_EOF || avio_feof(ic->pb)) && !is->eof) {
                 if (is->video_stream >= 0)
@@ -3526,7 +3547,14 @@ void ffp_set_need_decoded_frame(int need) {
 DecodedFrame ffp_get_decoded_video_frame(FFPlayer *ffp) {
     return ffp->is->decodedFrame;
 }
-            
+
+void ffp_set_need_h264_data(int need) {
+    g_need_h264_data = need;
+}
+
+H264Data ffp_get_h264_data(FFPlayer *ffp) {
+    return ffp->is->h264Data;
+}
 int ffp_seek_to_l(FFPlayer *ffp, long msec)
 {
     assert(ffp);

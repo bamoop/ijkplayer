@@ -374,6 +374,8 @@ typedef struct VideoState {
     char padding[256];
     ///< decoded frame
     DecodedFrame        decodedFrame;
+    ///< H264 data
+    H264Data            h264Data;
 } VideoState;
 
 /* options specified by the user */
