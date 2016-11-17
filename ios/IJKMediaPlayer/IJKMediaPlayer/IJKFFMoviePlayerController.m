@@ -221,6 +221,9 @@ void IJKFFIOStatCompleteRegister(void (*cb)(const char *url,
 
         _registeredNotifications = [[NSMutableArray alloc] init];
         [self registerApplicationObservers];
+        
+        [self needVideoDecodedFrame:NO];
+        [self needH264Data:NO];
     }
     return self;
 }
@@ -838,6 +841,23 @@ inline static void fillMetaInternal(NSMutableDictionary *meta, IjkMediaMeta *raw
                                            @"height":       @(decodedFrame.height),
                                            @"pts":          @(decodedFrame.pts),};
                 [[NSNotificationCenter defaultCenter] postNotificationName:IJKMoviePlayerGetVideoFrameNotification
+                                                                    object:self
+                                                                  userInfo:userInfo];
+                break;
+            }
+        }
+        case FFP_GET_H264_DATA: {
+            if (self.alreadyShutdown) {
+                break;
+            }
+            else {
+                H264Data h264OriginData = ijkmp_get_h264_data(_mediaPlayer);
+                NSData *h264Data = [[NSData alloc] initWithBytes:h264OriginData.data length:h264OriginData.size];
+                NSDictionary *userInfo = @{@"H264Data" : h264Data,
+                                           @"pts" : @(h264OriginData.pts),
+                                           @"dts" : @(h264OriginData.dts),
+                                           @"keyFrame" : @(h264OriginData.keyFrame),};
+                [[NSNotificationCenter defaultCenter] postNotificationName:IJKMoviePlayerGetH264DataNotificaiton
                                                                     object:self
                                                                   userInfo:userInfo];
                 break;

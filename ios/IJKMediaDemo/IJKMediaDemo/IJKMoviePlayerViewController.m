@@ -81,7 +81,8 @@
     [self.view addSubview:self.player.view];
     [self.view addSubview:self.mediaControl];
     [self.player setRTSPTimeOutValue:5000];
-    [self.player needVideoDecodedFrame:YES];
+//    [self.player needVideoDecodedFrame:YES];
+    [self.player needH264Data:NO];
     self.mediaControl.delegatePlayer = self.player;
 }
 
@@ -288,6 +289,14 @@
     NSInteger pts = [userInfo[@"pts"] integerValue];
     NSLog(@"frame %d,linesize0:%d,linesize1:%d,linesize2:%d,pts:%d", (int32_t)frameData.length, (int32_t)linesize0, (int32_t)linesize1, (int32_t)linesize2, (int32_t)pts);
 }
+
+- (void)getH264Data:(NSNotification *) notification {
+    NSDictionary *userInfo = notification.userInfo;
+    NSData *h264Data = userInfo[@"H264Data"];
+    BOOL keyFrame = [userInfo[@"keyFrame"] boolValue];
+    NSLog(@"h264 data:%d, key frame:%d", h264Data.length, keyFrame);
+}
+
 #pragma mark Install Movie Notifications
 
 /* Register observers for the various movie object notifications. */
@@ -327,6 +336,11 @@
                                              selector:@selector(getVideoFrame:)
                                                  name:IJKMoviePlayerGetVideoFrameNotification
                                                object:_player];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(getH264Data:)
+                                                 name:IJKMoviePlayerGetH264DataNotificaiton
+                                               object:_player];
 }
 
 #pragma mark Remove Movie Notification Handlers
@@ -340,6 +354,7 @@
     [[NSNotificationCenter defaultCenter]removeObserver:self name:IJKMoviePlayerPlaybackStateDidChangeNotification object:_player];
     [[NSNotificationCenter defaultCenter]removeObserver:self name:IJKMoviePlayerRTSPPaddingNotification object:_player];
     [[NSNotificationCenter defaultCenter]removeObserver:self name:IJKMoviePlayerGetVideoFrameNotification object:_player];
+        [[NSNotificationCenter defaultCenter]removeObserver:self name:IJKMoviePlayerGetH264DataNotificaiton object:_player];
 }
 
 @end
