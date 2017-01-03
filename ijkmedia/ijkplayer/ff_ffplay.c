@@ -96,6 +96,8 @@ static int64_t g_rtsp_last_decode_time    = 0;                ///< last decode f
 
 ///<FixMe(anxs) for decoded frame
 static int g_need_decoded_frame           = 0;
+static int g_pre_frame_length             = 0;
+static uint8_t * g_bufferMemory           = NULL;
 
 static int g_need_h264_data               = 0;
 
@@ -1670,16 +1672,21 @@ static int ffplay_video_thread(void *arg)
 
         if (g_need_decoded_frame && frame != NULL) {
             ///< FixMe(anxs) get decoded frame
-            av_free(is->decodedFrame.data[0]);
-            uint8_t *bufferMemory = (uint8_t *)av_malloc(frame->linesize[0]*frame->height + frame->linesize[1]*frame->height/2 + frame->linesize[2]*frame->height/2);
+            
+            uint32_t frameLength = frame->linesize[0]*frame->height + frame->linesize[1]*frame->height/2 + frame->linesize[2]*frame->height/2;
+            if (g_pre_frame_length == 0 || g_pre_frame_length < frameLength ) {
+                av_free(is->decodedFrame.data[0]);
+                g_bufferMemory = (uint8_t *)av_malloc(frameLength);
+                g_pre_frame_length = frameLength;
+            }
             is->decodedFrame.width  = frame->width;
             is->decodedFrame.height = frame->height;
             is->decodedFrame.linesize[0] = frame->linesize[0];
             is->decodedFrame.linesize[1] = frame->linesize[1];
             is->decodedFrame.linesize[2] = frame->linesize[2];
-            is->decodedFrame.data[0] = bufferMemory;
-            is->decodedFrame.data[1] = bufferMemory + frame->linesize[0]*frame->height;
-            is->decodedFrame.data[2] = bufferMemory + frame->linesize[0]*frame->height + frame->linesize[1]*frame->height/2;
+            is->decodedFrame.data[0] = g_bufferMemory;
+            is->decodedFrame.data[1] = g_bufferMemory + frame->linesize[0]*frame->height;
+            is->decodedFrame.data[2] = g_bufferMemory + frame->linesize[0]*frame->height + frame->linesize[1]*frame->height/2;
             memcpy(is->decodedFrame.data[0], frame->data[0], frame->linesize[0]*frame->height);
             memcpy(is->decodedFrame.data[1], frame->data[1], frame->linesize[1]*frame->height/2);
             memcpy(is->decodedFrame.data[2], frame->data[2], frame->linesize[2]*frame->height/2);

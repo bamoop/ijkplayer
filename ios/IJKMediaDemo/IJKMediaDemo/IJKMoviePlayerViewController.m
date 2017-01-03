@@ -81,8 +81,8 @@
     [self.view addSubview:self.player.view];
     [self.view addSubview:self.mediaControl];
     [self.player setRTSPTimeOutValue:5000];
-//    [self.player needVideoDecodedFrame:YES];
-    [self.player needH264Data:NO];
+    [self.player needVideoDecodedFrame:YES];
+//    [self.player needH264Data:NO];
     self.mediaControl.delegatePlayer = self.player;
 }
 
